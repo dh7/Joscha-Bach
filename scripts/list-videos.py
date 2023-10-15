@@ -1,4 +1,3 @@
-import os
 import googleapiclient.discovery
 
 def load_api_key(file_path):
@@ -58,6 +57,30 @@ def get_channel_id_from_video(api_key, video_id):
         print("Video not found.")
         return None
 
+def get_playlists(api_key, channel_id):
+    youtube = googleapiclient.discovery.build("youtube", "v3", developerKey=api_key)
+
+    all_playlists = []
+    next_page_token = None
+    while True:
+        playlists_response = youtube.playlists().list(
+            part="snippet",
+            channelId=channel_id,
+            maxResults=50,  # Maximum allowed by API
+            pageToken=next_page_token
+        ).execute()
+
+        for item in playlists_response.get("items", []):
+            title = item["snippet"]["title"]
+            playlist_id = item["id"]
+            #playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
+            all_playlists.append((title, playlist_id))
+
+        next_page_token = playlists_response.get("nextPageToken")
+        if next_page_token is None:
+            break
+
+    return all_playlists
 
 def get_all_videos(api_key, channel_id):
     youtube = googleapiclient.discovery.build("youtube", "v3", developerKey=api_key)
@@ -93,15 +116,44 @@ def get_all_videos(api_key, channel_id):
     
     return video_details
 
+def get_videos_from_playlist(api_key, playlist_id):
+    youtube = googleapiclient.discovery.build("youtube", "v3", developerKey=api_key)
+    all_videos = []
+    next_page_token = None
+    while True:
+        playlistitems_response = youtube.playlistItems().list(
+            part="snippet",
+            playlistId=playlist_id,
+            maxResults=50,  # Maximum allowed by API
+            pageToken=next_page_token
+        ).execute()
+
+        for item in playlistitems_response.get("items", []):
+            title = item["snippet"]["title"]
+            video_id = item["snippet"]["resourceId"]["videoId"]
+            video_url = f"https://www.youtube.com/watch?v={video_id}"
+            all_videos.append((title, video_url))
+
+        next_page_token = playlistitems_response.get("nextPageToken")
+        if next_page_token is None:
+            break
+        return all_videos
+
 if __name__ == "__main__":
     API_KEY = load_api_key("secret-api-key-youtube.txt")
-    print (API_KEY)
+    print ('API_KEY', API_KEY)
     # CHANNEL_ID = get_channel_id(API_KEY, for_username="JoschaBach") 
     CHANNEL_ID = get_channel_id_from_video(API_KEY, "lKQ0yaEJjok")
-    print (CHANNEL_ID)
+    print ('CHANNEL_ID', CHANNEL_ID)
     
+    playlists = get_playlists(API_KEY, CHANNEL_ID)
+    for (title, id) in playlists:
+        print('Playlist ID', id)
+        video_lists = get_videos_from_playlist(API_KEY, id)
+        print('video_lists', video_lists)
+    exit(0)
+
     videos = get_all_videos(API_KEY, CHANNEL_ID)
     
     for idx, video in enumerate(videos, 1):
         print(f"{idx}. {video['title']} (https://www.youtube.com/watch?v={video['id']})")
-
