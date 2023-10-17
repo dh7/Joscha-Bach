@@ -1,2 +1,3 @@
 /scripts/secret-api-key-youtube.txt
 /scripts/venv-jb/*
+.DS_Store
