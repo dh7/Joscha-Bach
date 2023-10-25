@@ -1,4 +1,6 @@
 # This script reads a CSV file with YouTube URLs and transcribes the audio
+# it uses the HF API to transcribe the audio
+# https://huggingface.co/spaces/sanchit-gandhi/whisper-jax
 
 import csv
 from gradio_client import Client
