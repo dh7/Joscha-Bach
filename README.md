@@ -6,3 +6,7 @@ This is an unofficial attempt to collect Joscha Bach thoughts from publicly avai
 
 His official website:
 http://bach.ai/
+
+---
+So far, 75 videos have been transcribed.
+The raw transcriptions are in the [raw_transcription](https://github.com/dh7/Joscha-Bach/tree/main/data/raw_transcriptions) folder.
