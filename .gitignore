@@ -1,4 +1,8 @@
 /scripts/secret-api-key-youtube.txt
+/scripts/secret-hf-token.txt
+/scripts/secret-replicate-token.txt
 /scripts/venv-jb/*
+/data/audio/*
+/data/videos/*
 .DS_Store
 *~
