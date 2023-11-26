@@ -1,5 +1,5 @@
-import replicate
 import json
+import replicate
 
 
 def remove_words_from_json(json_data):
@@ -47,6 +47,25 @@ def concatenate_consecutive_speakers(json_data):
     return {"segments": new_segments}
 
 
+def json_to_formatted_string(json_data):
+    """
+    Converts a JSON structure with 'segments' containing 'speaker' and 'text'
+    into a formatted string where each line starts with the speaker's name followed by the text.
+    """
+    formatted_text = []
+    for segment in json_data.get("segments", []):
+        speaker = segment.get("speaker", "Unknown")
+        text = segment.get("text", "")
+        formatted_text.append(f"{speaker}: {text}")
+
+    # create a multi-line string containing the formatted text
+    multi_line_string = """
+""".join(
+        formatted_text
+    )
+    return multi_line_string
+
+
 output = replicate.run(
     "thomasmol/whisper-diarization:4fe3d4a4c584781e7e4a4c27855cd82aac3bf1daa7b8dda5c4844201e051768c",
     input={
@@ -65,6 +84,7 @@ with open("output.json", "w") as f:
 
 result = remove_words_from_json(output)
 result_clean = concatenate_consecutive_speakers(result)
+result_text = json_to_formatted_string(result_clean)
 
-with open("result_clean.json", "w") as f:
-    json.dump(result_clean, f)
+with open("result_text.txt", "w") as f:
+    f.write(result_text)
